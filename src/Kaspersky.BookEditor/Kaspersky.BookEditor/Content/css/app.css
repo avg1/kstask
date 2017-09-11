@@ -1,0 +1,56 @@
+﻿.books-list-wrapper {
+    width: 250px;
+    float: left;
+}
+
+.books-list {
+    display: none;
+}
+
+.book-tile {
+    display: block;
+    text-decoration: none;
+    margin: 5px 0;
+    color: black;
+    background-color: #cccccc;
+    padding: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+}
+
+.book-detail-wrapper, .book-form-wrapper {
+    margin-left: 300px;
+    margin-bottom: 20px;
+}
+
+.content-wrapper {
+    min-width: 600px;
+    max-width: 800px;
+    margin: auto;
+    padding: 0 10px;
+}
+
+.edit-book-button {
+    float: right;
+}
+
+.book-form-wrapper input {
+     width: 100%;
+}
+
+.book-image {
+    display: none;
+}
+
+#book-img {
+    float: left;
+    margin-right: 20px;
+    height: 160px;
+}
+
+#sorting-select {
+    height: 27px;
+}

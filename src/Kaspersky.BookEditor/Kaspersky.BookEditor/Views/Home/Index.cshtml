@@ -1,0 +1,151 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script id="books-list-template" type="text/x-handlebars-template">
+        {{#each books}}
+        <a class="book-tile" href="javascript:;" onclick="document.location.hash='{{this.id}}';">
+            <div>
+                {{this.header}} ({{this.year}})
+            </div>
+        </a>
+        {{/each}}
+    </script>
+
+    <script id="book-detail-template" type="text/x-handlebars-template">
+        {{#if this.header}}
+        <div class="book-detail">
+            <div class="book-image">
+                <img id="book-img"></img>
+            </div>
+            <div class="book-info">
+                <h4>{{this.header}}</h4>
+                <p>
+                    {{#each this.authors}}
+                    {{this.firstName}} {{this.lastName}}{{#unless @Html.Raw("@")last}},{{/unless}}
+                    {{/each}}
+                </p>
+                <p>{{this.pageCount}} стр.</p>
+                {{#if this.publisher}}
+                <p>Издательство {{this.publisher}}</p>
+                {{/if}}
+                <p>{{this.year}} г.</p>
+                <p>ISBN: {{this.isbn}}</p>
+            </div>
+            <button type="button" class="edit-book-button btn btn-default btn-sm" onclick="document.location.hash=document.location.hash + '/edit';">
+                <span class="glyphicon glyphicon-edit"></span> Редактировать
+            </button>
+            <button id="delete-book" type="button" class="edit-book-button btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-remove"></span> Удалить
+            </button>
+        </div>
+        {{/if}}
+    </script>
+
+    <script id="book-form-template" type="text/x-handlebars-template">        
+        <form id="book-file-form" enctype="multipart/form-data">
+            <p>
+                Изображение:
+                <input id="book-image" type="file" name="Image" accept=".jpg,.png,.gif" />
+            </p>
+        </form>
+
+        <form id="book-form">
+            {{#if this.id}}
+            <input type="hidden" name="Id" value="{{this.id}}">
+            {{/if}}
+            <p>
+                Заголовок:
+                <input name="Header" value="{{this.header}}" data-validation="required length" data-validation-length="max30" data-validation-error-msg="Обязательное поле, не более 30 символов">
+            </p>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Авторы</div>
+                <div class="panel-body">
+                    {{#each this.authors}}
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <p>
+                                Имя:
+                                <input type="text" name="Authors[{{@Html.Raw("@")index}}].FirstName" value="{{this.firstName}}" data-validation="required length" data-validation-length="max20" data-validation-error-msg="Обязательное поле, не более 20 символов" />
+                            </p>
+                            <p>
+                                Фамилия:
+                                <input type="text" name="Authors[{{@Html.Raw("@")index}}].LastName" value="{{this.lastName}}" data-validation="required length" data-validation-length="max20" data-validation-error-msg="Обязательное поле, не более 20 символов" />
+                            </p>
+                            <button class="form-section-delete btn btn-default btn-sm" type="button">Удалить</button>
+                        </div>
+                    </div>
+                    {{/each}}
+                    <button class="form-section-add btn btn-default btn-sm" type="button">Добавить</button>
+                </div>
+            </div>
+
+            <p>
+                Количество страниц:
+                <input data-validation="number" data-validation-allowing="range[1;10000]" name="PageCount" value="{{this.pageCount}}" data-validation-error-msg="Число между 1 и 10000">
+            </p>
+            <p>
+                Название издательства:
+                <input data-validation="length" data-validation-length="max30" name="Publisher" value="{{this.publisher}}" data-validation-error-msg="Не более 30 символов">
+            </p>
+            <p>
+                Год публикации:
+                <input name="Year" value="{{this.year}}" data-validation="number" data-validation-allowing="range[1800;3000]" data-validation-error-msg="Обязательное поле, не ранее 1800">
+            </p>
+            <p>
+                ISBN:
+                <input data-validation="required" name="Isbn" value="{{this.isbn}}" data-validation-error-msg="Обязательное поле">
+            </p>
+
+            <button type="button" class="btn btn-default btn-sm" id="save-book">Сохранить</button>
+            <button type="button" class="btn btn-default btn-sm" id="close-form-book">Отмена</button>
+        </form>        
+    </script>
+
+    <script type="text/javascript" src="~/Content/js/handlebars-v4.0.10.js">
+    </script>
+    <script type="text/javascript" src="~/Content/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="~/Content/js/jquery.form-validator.min.js"></script>
+    <script type="text/javascript" src="~/Content/js/app.js"></script>
+
+    <link rel="stylesheet" href="~/Content/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/css/app.css" />
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h1>Books editor</h1>
+        </div>
+        <div class="books-list-wrapper">
+            <div class="sorting">
+                <select id="sorting-select">
+                    <option value="header">Заголовок</option>
+                    <option value="year">Год публикации</option>
+                </select>
+                <button id="sort-desc" type="button" class="add-book-button btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                </button>
+                <button id="sort-asc" type="button" class="add-book-button btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                </button>
+            </div>
+            <div class="books-list">
+            </div>
+            <button type="button" class="add-book-button btn btn-default btn-sm" onclick="document.location.hash='add';">
+                <span class="glyphicon glyphicon-plus"></span> Добавить
+            </button>
+        </div>
+        <div class="book-detail-wrapper"></div>
+        <div class="book-form-wrapper"></div>
+    </div>
+</body>
+</html>
